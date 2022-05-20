@@ -5,10 +5,11 @@ import {
   ItemCount,
 } from './cart-icon.styles.jsx'
 import CartDropdown from '../cart-dropdown/cart-dropdown.component'
-import { useContext } from 'react'
-import { CartContext } from '../../context/cart-item.context'
+
+import { useSelector } from 'react-redux'
+import { selectItemCount } from '../../store/cart/cart.selector.js'
 const CartIcon = () => {
-  const { itemCount } = useContext(CartContext)
+  const itemCount = useSelector(selectItemCount)
   const [cartIcon, setCartIcon] = useState(false)
   return (
     <>

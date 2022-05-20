@@ -4,8 +4,19 @@ import Home from './routes/home/home.component'
 import Shop from './routes/shop/shop.component'
 import CheckOut from './routes/check-out/checkout.component'
 import Authentication from './routes/authentication/authentication.component'
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { checkUserSession } from './store/user/user.action'
+
+
 
 const App = () => {
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(checkUserSession())
+  }, [])
+
+
 
   return (
     <Routes>

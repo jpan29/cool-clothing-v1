@@ -1,5 +1,4 @@
 
-import { async } from '@firebase/util'
 import { initializeApp } from 'firebase/app'
 import {
   getAuth,
@@ -9,8 +8,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
-
+  onAuthStateChanged,
 } from 'firebase/auth'
 import {
   getFirestore,
@@ -20,7 +18,7 @@ import {
   collection,
   writeBatch,
   query,
-  getDocs
+  getDocs,
 } from 'firebase/firestore'
 const firebaseConfig = {
   apiKey: "AIzaSyCu0ufOrqdDOejJ60nerqEkBiCfKtwsn0A",
@@ -59,12 +57,13 @@ export const getCategoriesAndDocuments = async () => {
   const collectionRef = collection(db, 'categories')
   const q = query(collectionRef)
   const querySnapshot = await getDocs(q)
-  const categoryMap = querySnapshot.docs.reduce((acc, docSnapshot) => {
-    const { title, items } = docSnapshot.data()
-    acc[title.toLowerCase()] = items
-    return acc
-  }, {})
-  return categoryMap
+  return querySnapshot.docs.map(docSnapshot => docSnapshot.data())
+  // const categoryMap = querySnapshot.docs.reduce((acc, docSnapshot) => {
+  //   const { title, items } = docSnapshot.data()
+  //   acc[title.toLowerCase()] = items
+  //   return acc
+  // }, {})
+  // return categoryMap
 }
 export const createUserDocumentFromAuth = async (userAuth, additionalInfo = {}) => {
   if (!userAuth) return
@@ -88,7 +87,7 @@ export const createUserDocumentFromAuth = async (userAuth, additionalInfo = {}) 
     }
 
   }
-  return userDocRef
+  return userSnapshot
 }
 export const createAuthUserWithEmailAndPassword = async (email, password) => {
   if (!email || !password) return
@@ -100,3 +99,15 @@ export const signInAuthUserWithEmailAndPassword = async (email, password) => {
 }
 export const signOutUser = async () => await signOut(auth)
 export const onAuthStateChangedListener = (callback) => onAuthStateChanged(auth, callback)
+
+export const getCurrentUser = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (userAuth) => {
+        unsubscribe()
+        resolve(userAuth)
+      },
+      reject)
+  })
+}
